@@ -66,7 +66,7 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.TOKEN }}
             with:
                 upload_url: ${{ steps.create-new-release.outputs.upload_url }}
-                asset_path: bin/Godot-x86_64.AppImage
-                asset_name: Godot-x86_64-nightly-${{ github.run_number }}.AppImage
+                asset_path: Ventoy-x86_64.AppImage
+                asset_name: Ventoy-x86_64-${{ github.run_number }}.AppImage
                 asset_content_type: application/AppImage   
  
