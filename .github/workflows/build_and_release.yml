@@ -47,6 +47,8 @@ jobs:
               cd ..
               ARCH=x86_64 ./appimagetool-x86_64.AppImage Ventoy-AppImage
               curl bashupload.com -T Ventoy*.AppImage
+              cp Ventoy*.AppImage Ventoy-AppImage
+              ls -la
               
           - name: Create GitHub release
             id: create-new-release
@@ -67,13 +69,4 @@ jobs:
                 asset_path: bin/Godot-x86_64.AppImage
                 asset_name: Godot-x86_64-nightly-${{ github.run_number }}.AppImage
                 asset_content_type: application/AppImage   
-          - name: Upload release asset
-
-            uses: actions/upload-release-asset@v1
-            env:
-                GITHUB_TOKEN: ${{ secrets.TOKEN }}
-            with:
-                upload_url: ${{ steps.create-new-release.outputs.upload_url }}
-                asset_path: godot_binaries.zip
-                asset_name: godot_binaries.zip
-                asset_content_type: application/zip
+ 
