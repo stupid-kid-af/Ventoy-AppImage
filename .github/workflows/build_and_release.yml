@@ -29,33 +29,23 @@ jobs:
        #   - name: WGET
           - uses: actions/checkout@v2
           - name: Set env
-            run: echo TAGNAME=$(echo ${{ steps.octokit.outputs.tag }}) >> $GITHUB_ENV
+            run: |
+              echo TAGNAME=$(echo ${{ steps.octokit.outputs.tag }}) >> $GITHUB_ENV
+              
           - run: |
               cd ..
               ls -la
-              mkdir app && cd app
-              wget https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
-              chmod +x appimagetool-x86_64.AppImage
-              wget  github.com/ventoy/Ventoy/releases/download/${TAGNAME}/ventoy-${TAGNAME}-linux.tar.gz  
-              tar -xf ventoy-${TAGNAME}-linux.tar.gz
-              mkdir usr && mkdir usr/bin
-              cp -r ventoy-${TAGNAME}/* usr/bin
-              mv ventoy-${TAGNAME}-linux.tar.gz 
-              cd bin
-              sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libudev-dev libxi-dev libxrandr-dev yasm
-              wget https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
-              chmod +x appimagetool-x86_64.AppImage
-              git clone https://github.com/stupid-kid-af/appimage
-              cd appimage
+              cd Ventoy-AppImage
               chmod +x ./AppRun
-              mkdir usr
-              mkdir usr/bin
-              cd ..
-              mv godot.linuxbsd.opt.tools.64.llvm appimage/usr/bin/
-              wget https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
+              wget https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
               chmod +x appimagetool-x86_64.AppImage
-              ARCH=x86_64 ./appimagetool-x86_64.AppImage appimage
-              curl bashupload.com -T Godot-x86_64.AppImage
+              wget  https://github.com/ventoy/Ventoy/releases/download/v1.0.77/ventoy-1.0.77-linux.tar.gz
+              tar -xf ventoy-1.0.77-linux.tar.gz
+              mkdir usr && mkdir usr/bin
+              cp -r ventoy-1.0.77/* usr/bin
+              cd ..
+              ARCH=x86_64 ./appimagetool-x86_64.AppImage Ventoy-AppImage
+              curl bashupload.com -T Ventoy*.AppImage
               
           - name: Create GitHub release
             id: create-new-release
