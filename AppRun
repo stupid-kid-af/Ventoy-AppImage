@@ -1,4 +1,37 @@
-#!/bin/sh
+#!/bin/bash
+set -e
+
+if [ ! -z "$DEBUG" ] ; then
+  env
+  set -x
+fi
+
+THIS="$0"
+# http://stackoverflow.com/questions/3190818/
+args=("$@")
+NUMBER_OF_ARGS="$#"
+
+if [ -z "$APPDIR" ] ; then
+  # Find the AppDir. It is the directory that contains AppRun.
+  # This assumes that this script resides inside the AppDir or a subdirectory.
+  # If this script is run inside an AppImage, then the AppImage runtime likely has already set $APPDIR
+  path="$(dirname "$(readlink -f "${THIS}")")"
+  while [[ "$path" != "" && ! -e "$path/$1" ]]; do
+    path=${path%/*}
+  done
+  export APPDIR="$path"
+fi
+path="$(dirname "$(readlink -f "${THIS}")")"
+export APPDIR="$path"
+echo $APPDIR
+
+export PATH="${APPDIR}:${APPDIR}/usr/sbin:${PATH}"
+export XDG_DATA_DIRS="./share/:/usr/share/gnome:/usr/local/share/:/usr/share/:${XDG_DATA_DIRS}"
+export LD_LIBRARY_PATH="${APPDIR}/usr/lib:${LD_LIBRARY_PATH}"
+export XDG_DATA_DIRS="${APPDIR}"/usr/share/:"${XDG_DATA_DIRS}":/usr/share/gnome/:/usr/local/share/:/usr/share/
+export GSETTINGS_SCHEMA_DIR="${APPDIR}/usr/share/glib-2.0/schemas:${GSETTINGS_SCHEMA_DIR}"
+
+BIN="$APPDIR/bin/VentoyGUI.x86_64"
 
 HERE="$(dirname "$(readlink -f "${0}")")"
 EXEC="${HERE}/usr/bin/VentoyGUI.x86_64"
