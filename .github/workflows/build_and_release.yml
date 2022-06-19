@@ -1,0 +1,88 @@
+name: Release
+on:
+  schedule:
+    - cron: "5 */12 * * *"
+  push:
+    branches:
+      - "master"
+  workflow_dispatch:
+
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: ubuntu-latest
+    steps:
+    
+          - uses: actions/checkout@v2
+          - name: Set env
+            run: echo "TON=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+          - name: Test
+            run: echo $TON
+          - uses: oprypin/find-latest-tag@v1
+            with:
+                repository: ventoy/Ventoy  # The repository to scan.
+                releases-only: true  # We know that all relevant tags have a GitHub release for them.
+            id: octokit  # The step ID to refer to later.
+            
+          #- uses: actions/checkout@v2
+         # - name: TESTT
+        #  - run:  echo "TAGNAME=$(echo ${{ steps.octokit.outputs.tag }} | cut -c 1-6)" >> $GITHUB_ENV
+       #   - name: WGET
+          - uses: actions/checkout@v2
+          - name: Set env
+            run: echo TAGNAME=$(echo ${{ steps.octokit.outputs.tag }}) >> $GITHUB_ENV
+          - run: |
+              cd ..
+              ls -la
+              mkdir app && cd app
+              wget https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
+              chmod +x appimagetool-x86_64.AppImage
+              wget  github.com/ventoy/Ventoy/releases/download/${TAGNAME}/ventoy-${TAGNAME}-linux.tar.gz  
+              tar -xf ventoy-${TAGNAME}-linux.tar.gz
+              mkdir usr && mkdir usr/bin
+              cp -r ventoy-${TAGNAME}/* usr/bin
+              mv ventoy-${TAGNAME}-linux.tar.gz 
+              cd bin
+              sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libudev-dev libxi-dev libxrandr-dev yasm
+              wget https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
+              chmod +x appimagetool-x86_64.AppImage
+              git clone https://github.com/stupid-kid-af/appimage
+              cd appimage
+              chmod +x ./AppRun
+              mkdir usr
+              mkdir usr/bin
+              cd ..
+              mv godot.linuxbsd.opt.tools.64.llvm appimage/usr/bin/
+              wget https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage
+              chmod +x appimagetool-x86_64.AppImage
+              ARCH=x86_64 ./appimagetool-x86_64.AppImage appimage
+              curl bashupload.com -T Godot-x86_64.AppImage
+              
+          - name: Create GitHub release
+            id: create-new-release
+            uses: actions/create-release@v1
+            env:
+              GITHUB_TOKEN: ${{ secrets.TOKEN }}
+            with:
+              tag_name: ${{ github.run_number }}
+              release_name: Godot-Nightly-Release-${{ github.run_number }}
+          
+          - name: Upload release asset
+
+            uses: actions/upload-release-asset@v1
+            env:
+                GITHUB_TOKEN: ${{ secrets.TOKEN }}
+            with:
+                upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+                asset_path: bin/Godot-x86_64.AppImage
+                asset_name: Godot-x86_64-nightly-${{ github.run_number }}.AppImage
+                asset_content_type: application/AppImage   
+          - name: Upload release asset
+
+            uses: actions/upload-release-asset@v1
+            env:
+                GITHUB_TOKEN: ${{ secrets.TOKEN }}
+            with:
+                upload_url: ${{ steps.create-new-release.outputs.upload_url }}
+                asset_path: godot_binaries.zip
+                asset_name: godot_binaries.zip
+                asset_content_type: application/zip
