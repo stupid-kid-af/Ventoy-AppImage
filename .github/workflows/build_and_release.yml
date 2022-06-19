@@ -57,7 +57,7 @@ jobs:
               GITHUB_TOKEN: ${{ secrets.TOKEN }}
             with:
               tag_name: ${{ github.run_number }}
-              release_name: Godot-Nightly-Release-${{ github.run_number }}
+              release_name: Ventoy-AppImage-Release-${{ github.run_number }}
           
           - name: Upload release asset
 
