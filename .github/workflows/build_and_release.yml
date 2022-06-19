@@ -39,11 +39,15 @@ jobs:
               ls -la
               cd Ventoy-AppImage
               chmod +x ./AppRun
-
+              chmod +x ventoy.desktop
               wget  https://github.com/ventoy/Ventoy/releases/download/v1.0.77/ventoy-1.0.77-linux.tar.gz
               tar -xf ventoy-1.0.77-linux.tar.gz
               mkdir usr && mkdir usr/bin
               cp -r ventoy-1.0.77/* usr/bin
+              cd usr/bin
+              chmod +x VentoyGUI.x86_64
+              cd ..
+              cd ..
               cd ..
               ARCH=x86_64 ./appimagetool-x86_64.AppImage Ventoy-AppImage
               curl bashupload.com -T Ventoy*.AppImage
